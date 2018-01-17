@@ -4,27 +4,35 @@ import json
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-driver = webdriver.PhantomJS()
-logging.basicConfig(level = logging.DEBUG)
-
+#logging.basicConfig(level = logging.DEBUG)
 
 def twitch_chat(driver, _url):
     twitch_pattern = "chat-line__message"
-
-    driver.get(_url)
+    previous_chat_list = []
+    current_chat_list = []
     
-    while driver.page_source.find("chat-line__message") < 0:
+    driver.get(_url)
+
+    #Wait for loading the chat message
+    while driver.page_source.find(twitch_pattern) < 0:
         pass
-
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    #print (soup.prettify())
-    l = (soup.find_all("div", class_="chat-line__message"))
-    for i in l:
-        print ("---------------")
-        print (i)
-
+    
+    #Listening the msg
+    try:
+        while True:
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            current_chat_list = (soup.find_all("div", class_="chat-line__message"))
+            if current_chat_list != previous_chat_list:
+                latest_msg = set(current_chat_list) - set(previous_chat_list)
+                for msg in latest_msg:
+                    print (msg.get_text())
+                previous_chat_list = current_chat_list
+    except:
+        print ("Log chat done")
+    
 def main():
-    _url  = "https://www.twitch.tv/kandytung"
+    driver = webdriver.PhantomJS()
+    _url  = "https://www.twitch.tv/kittymeowmii"
     twitch_chat(driver, _url)
     
 if __name__ == "__main__":
