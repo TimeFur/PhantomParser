@@ -27,40 +27,46 @@ class YT_download():
         pass
 
     def test(self, _url):
-        twitch_pattern = "https://r2"
+        pattern = "yt-live-chat-text-message-renderer"
         previous_chat_list = []
         current_chat_list = []
         
         self.driver.get(_url)
+
         #Wait for loading the chat message
-        while self.driver.page_source.find(twitch_pattern) < 0:
+        while (self.driver.page_source.find(pattern)) < 0:
             pass
+        #self.driver.find_element_by_id("CloseButton").click()
+        #self.driver.find_element_by_class_name(pattern).click()
         #print (self.driver.page_source)
+
         #Listening the msg
         
         try:
-            #while True:
-            soup = BeautifulSoup(self.driver.page_source, 'html.parser')
-            current_chat_list = (soup.find_all("a", class_="link link-download subname ga_track_events download-icon"))
-            if current_chat_list != previous_chat_list:
-                latest_msg = set(current_chat_list) - set(previous_chat_list)
-                for msg in latest_msg:
-                    try:
-                        print (msg)
-                    except:
-                        print ("----pass-----")
-                        pass
-                previous_chat_list = current_chat_list
+            while True:
+                soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+                current_chat_list = (soup.find_all("span", class_="style-scope yt-live-chat-text-message-renderer"))
+                if current_chat_list != previous_chat_list:
+                    latest_msg = set(current_chat_list) - set(previous_chat_list)
+                    for msg in latest_msg:
+                        try:
+                            print (msg)
+                        except:
+                            print ("----pass-----")
+                            pass
+                    previous_chat_list = current_chat_list
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print ("Error Line=" + exc_tb.tb_lineno)
             print ("Log chat done")
         
+    
 def main():
     #driver = webdriver.PhantomJS()
-    driver = webdriver.Firefox()
+    chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+    driver = webdriver.Chrome(chrome_path)
     
-    _url  = "https://www.ssyoutube.com/watch?v=Qly4kNtckkg"
+    _url  = "https://www.youtube.com/watch?v=imj5ctZD8-c"
 
     yt_obj = YT_download(driver, _url)
     yt_obj.test(_url)

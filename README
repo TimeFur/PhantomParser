@@ -1,2 +1,9 @@
 1. The system should add the Phantoms program
 2. Set the Phantoms to the PATH env
+
+
+Firefox
+->Install geckodriver, add to env path
+
+Chrome
+->Install chromedriver, add to the folder, same as Chrome.exe

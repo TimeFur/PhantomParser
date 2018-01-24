@@ -9,16 +9,16 @@ from selenium import webdriver
 
 def youtube_chat(driver, _url):
     
-    youtube_pattern = "style-scope yt-live-chat-item-list-renderer"
+    youtube_pattern = "style-scope yt-live-chat-text-message-renderer"
     previous_chat_list = []
     current_chat_list = []
-    
+    print ("Start1")
     driver.get(_url)
-
+    print ("Start2")
     #Wait for loading the chat message
     while driver.page_source.find(youtube_pattern) < 0:
         pass
-    
+    print ("Start")
     #Listening the msg
     try:
         while True:
@@ -69,11 +69,13 @@ def twitch_chat(driver, _url):
         print ("Log chat done")
     
 def main():
-    driver = webdriver.PhantomJS()
-    _url  = "https://www.twitch.tv/leejuju"
-    twitch_chat(driver, _url)
-    #_url  = "https://www.youtube.com/watch?v=wUPPkSANpyo"
-    #youtube_chat(driver, _url)
+    #driver = webdriver.Firefox()
+    #_url  = "https://www.twitch.tv/leeshinn"
+    #twitch_chat(driver, _url)
+    chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
+    driver = webdriver.Chrome(chrome_path)
+    _url  = "https://www.youtube.com/watch?v=4Pz5EoLmSVw"
+    youtube_chat(driver, _url)
     
 if __name__ == "__main__":
     main()
