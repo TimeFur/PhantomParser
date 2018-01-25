@@ -16,6 +16,7 @@ class YT_download():
         self.driver = driver
         self.list_url = _url
         self.youtube_list = []
+        self.youtubeto_list = []
         
     def showlist(self):
         pass
@@ -51,8 +52,11 @@ class YT_download():
         print ("Download click done~")
     
     def listDownload(self, _url):
+        self.youtube_list, self.youtubeto_list = self.parseTubeList(_url)
         
-        pass
+        for l_url in self.youtubeto_list:
+            print ("Download " + l_url)
+            self.download(l_url)
 
     def test(self, _url):
         pattern = "yt-live-chat-text-message-renderer"
@@ -91,8 +95,11 @@ class YT_download():
     def parseTubeList(self, _url):
         pattern = "yt-simple-endpoint style-scope ytd-playlist-video-renderer"
         result_pattern = "https://www.youtube.com"
+        result_to_pattern = "https://www.youtubeto.com"
+        
         current_list = []
         result_list = []
+        result_to_list = []
         
         self.driver.get(_url)
         while (self.driver.page_source.find(pattern)) < 0:
@@ -102,10 +109,13 @@ class YT_download():
         soup = BeautifulSoup(self.driver.page_source, "html.parser")
         current_list = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
         for l in current_list:
-            result_list.append(result_pattern + l['href'])
+            msg = l['href']
+            result_list.append(result_pattern + msg)
+            result_to_list.append(result_to_pattern + msg)
         print (result_list)
+        print (result_to_list)
         print ("======Done======")
-        return result_list
+        return result_list, result_to_list
         
 def main():
     #---------------------Selenium Driver------------------------------
@@ -119,10 +129,12 @@ def main():
     _url  = "https://www.youtube.com/playlist?list=PLCQf7od9epZmcWjwT3031Alo0KZFFM89f"
 
     yt_obj = YT_download(driver, _url)
-    yt_obj.parseTubeList(_url)
+    yt_obj.listDownload(_url)
+    
+    #yt_obj.parseTubeList(_url)
 
-    _url  = "https://www.youtubeto.com/zh/?v=rXLU30MceTc"
-    yt_obj.download(_url)
+    #_url  = "https://www.youtubeto.com/zh/?v=rXLU30MceTc"
+    #yt_obj.download(_url)
     
     driver.close()
     
