@@ -21,10 +21,37 @@ class YT_download():
         pass
         print (help(gdata))
 
-    def download(self, url):
-        pass
+    def download(self, _url):
+        
+        convert_url = "https://www.converto.io/en"
+        self.driver.get(convert_url)
+        print ("Access to download website")
+        
+        #
+        text_bar = self.driver.find_element_by_id("youtube-url")
+        text_bar.send_keys(_url)
+        print ("Send url done~")
+        
+        #
+        while (self.driver.page_source.find("display: inline-block;")) < 0:
+            pass
+        covert_btn = self.driver.find_element_by_css_selector("a.btn.lg.convert-btn")
+        while covert_btn.is_displayed() == False:
+            pass
+        covert_btn.click()
+        print ("Click covert done~")
+        
+        #
+        while (self.driver.page_source.find("Click here")) < 0:
+            pass
+        download_btn = self.driver.find_element_by_id("download-url")
+        while download_btn.is_displayed() == False:
+            pass
+        download_btn.click()
+        print ("Download click done~")
     
-    def listDownload(self, url):
+    def listDownload(self, _url):
+        
         pass
 
     def test(self, _url):
@@ -65,6 +92,7 @@ class YT_download():
         pattern = "yt-simple-endpoint style-scope ytd-playlist-video-renderer"
         result_pattern = "https://www.youtube.com"
         current_list = []
+        result_list = []
         
         self.driver.get(_url)
         while (self.driver.page_source.find(pattern)) < 0:
@@ -74,20 +102,27 @@ class YT_download():
         soup = BeautifulSoup(self.driver.page_source, "html.parser")
         current_list = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
         for l in current_list:
-            self.youtube_list.append(result_pattern + l['href'])
-        print (self.youtube_list)
+            result_list.append(result_pattern + l['href'])
+        print (result_list)
         print ("======Done======")
+        return result_list
         
 def main():
+    #---------------------Selenium Driver------------------------------
     #driver = webdriver.PhantomJS()
     #driver = webdriver.Firefox()
     chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
     driver = webdriver.Chrome(chrome_path)
-    
+
+
+    #---------------------Flow------------------------------
     _url  = "https://www.youtube.com/playlist?list=PLCQf7od9epZmcWjwT3031Alo0KZFFM89f"
 
     yt_obj = YT_download(driver, _url)
     yt_obj.parseTubeList(_url)
+
+    _url  = "https://www.youtubeto.com/zh/?v=rXLU30MceTc"
+    yt_obj.download(_url)
     
     driver.close()
     
