@@ -15,7 +15,8 @@ class YT_download():
     def __init__ (self, driver, _url):
         self.driver = driver
         self.list_url = _url
-
+        self.youtube_list = []
+        
     def showlist(self):
         pass
         print (help(gdata))
@@ -59,18 +60,34 @@ class YT_download():
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print ("Error Line=" + exc_tb.tb_lineno)
             print ("Log chat done")
+
+    def parseTubeList(self, _url):
+        pattern = "yt-simple-endpoint style-scope ytd-playlist-video-renderer"
+        result_pattern = "https://www.youtube.com"
+        current_list = []
         
-    
+        self.driver.get(_url)
+        while (self.driver.page_source.find(pattern)) < 0:
+            pass
+        print ("======Get item======")
+        
+        soup = BeautifulSoup(self.driver.page_source, "html.parser")
+        current_list = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
+        for l in current_list:
+            self.youtube_list.append(result_pattern + l['href'])
+        print (self.youtube_list)
+        print ("======Done======")
+        
 def main():
     #driver = webdriver.PhantomJS()
     #driver = webdriver.Firefox()
     chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
     driver = webdriver.Chrome(chrome_path)
     
-    _url  = "https://www.youtube.com/live_chat?continuation=0ofMyANBGjRDaU1TSVFvWVZVTmZXRkp4TjBweWFVRlBVblpFWlRGc1NURlNRWE5CRWdVdmJHbDJaU0FCMAFoBIIBBAgEEAA%253D"
+    _url  = "https://www.youtube.com/playlist?list=PLCQf7od9epZmcWjwT3031Alo0KZFFM89f"
 
     yt_obj = YT_download(driver, _url)
-    yt_obj.test(_url)
+    yt_obj.parseTubeList(_url)
     
     driver.close()
     
