@@ -23,12 +23,14 @@ class YT_download():
         print (help(gdata))
 
     def download(self, _url):
-        
+        timeout = 0
         convert_url = "https://www.converto.io/en"
         self.driver.get(convert_url)
         print ("Access to download website")
         
         #
+        while (self.driver.page_source.find("youtube-url")) < 0:
+            pass
         text_bar = self.driver.find_element_by_id("youtube-url")
         text_bar.send_keys(_url)
         print ("Send url done~")
@@ -41,9 +43,16 @@ class YT_download():
             pass
         covert_btn.click()
         print ("Click covert done~")
+
+        print (self.driver.window_handles)
+        
         
         #
         while (self.driver.page_source.find("Click here")) < 0:
+            timeout += 1
+            if timeout > 1000:
+                timeout = 0
+                covert_btn.click()
             pass
         download_btn = self.driver.find_element_by_id("download-url")
         while download_btn.is_displayed() == False:
@@ -54,9 +63,10 @@ class YT_download():
     def listDownload(self, _url):
         self.youtube_list, self.youtubeto_list = self.parseTubeList(_url)
         
-        for l_url in self.youtubeto_list:
+        for l_url in self.youtube_list:
             print ("Download " + l_url)
             self.download(l_url)
+            
 
     def test(self, _url):
         pattern = "yt-live-chat-text-message-renderer"
@@ -136,7 +146,7 @@ def main():
     #_url  = "https://www.youtubeto.com/zh/?v=rXLU30MceTc"
     #yt_obj.download(_url)
     
-    driver.close()
+    #driver.close()
     
 if __name__ == "__main__":
     main()
