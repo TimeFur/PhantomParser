@@ -63,14 +63,16 @@ class YT_download():
     
 def main():
     #driver = webdriver.PhantomJS()
-    chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+    #driver = webdriver.Firefox()
+    chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
     driver = webdriver.Chrome(chrome_path)
     
-    _url  = "https://www.youtube.com/watch?v=imj5ctZD8-c"
+    _url  = "https://www.youtube.com/live_chat?continuation=0ofMyANBGjRDaU1TSVFvWVZVTmZXRkp4TjBweWFVRlBVblpFWlRGc1NURlNRWE5CRWdVdmJHbDJaU0FCMAFoBIIBBAgEEAA%253D"
 
     yt_obj = YT_download(driver, _url)
     yt_obj.test(_url)
     
     driver.close()
+    
 if __name__ == "__main__":
     main()
