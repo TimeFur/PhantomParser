@@ -5,6 +5,8 @@ import sys
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from selenium.webdriver.common.alert import Alert
+from time import sleep
 
 #logging.basicConfig(level = logging.DEBUG)
 
@@ -17,15 +19,22 @@ class YT_download():
         self.list_url = _url
         self.youtube_list = []
         self.youtubeto_list = []
+
+        self.once_flag = True
+        self.main_window = None
         
     def showlist(self):
         pass
         print (help(gdata))
 
     def download(self, _url):
+
         timeout = 0
         convert_url = "https://www.converto.io/en"
         self.driver.get(convert_url)
+
+        #self.main_window = self.driver.current_window_handle
+        #self.driver.switch_to_window(self.main_window)
         print ("Access to download website")
         
         #
@@ -43,9 +52,8 @@ class YT_download():
             pass
         covert_btn.click()
         print ("Click covert done~")
-
+        #self.driver.switch_to_window(self.main_window)
         print (self.driver.window_handles)
-        
         
         #
         while (self.driver.page_source.find("Click here")) < 0:
@@ -59,14 +67,35 @@ class YT_download():
             pass
         download_btn.click()
         print ("Download click done~")
-    
+        
+    def _download_youtubeto_(self, _url):
+        iframe_pop_pattern = "MP3Format"
+        default_pattern = "DownloadMP3_text"
+        pattern = "IframeChooseDefault"
+
+        #self.driver.implicitly_wait(30)
+        self.driver.get(_url)
+         
+        while (self.driver.page_source.find(pattern)) < 0:
+            pass
+        print ("iframe get")
+        frm_template = self.driver.switch_to.frame(self.driver.find_element_by_id(pattern))
+        
+        print ("Click download")
+        try:
+            print self.driver.find_element_by_id(iframe_pop_pattern)
+            self.driver.find_element_by_id(iframe_pop_pattern).click()
+        except:
+            self.driver.switch_to_default_content()
+            self.driver.find_element_by_id(default_pattern).click()
+        
     def listDownload(self, _url):
         self.youtube_list, self.youtubeto_list = self.parseTubeList(_url)
         
-        for l_url in self.youtube_list:
+        for l_url in self.youtubeto_list:
             print ("Download " + l_url)
-            self.download(l_url)
-            
+            self._download_youtubeto_(l_url)
+            #sleep(1)            
 
     def test(self, _url):
         pattern = "yt-live-chat-text-message-renderer"
@@ -119,7 +148,8 @@ class YT_download():
         soup = BeautifulSoup(self.driver.page_source, "html.parser")
         current_list = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
         for l in current_list:
-            msg = l['href']
+            website = l['href']
+            msg = website[:website.find("&list")]
             result_list.append(result_pattern + msg)
             result_to_list.append(result_to_pattern + msg)
         print (result_list)
@@ -137,10 +167,12 @@ def main():
 
     #---------------------Flow------------------------------
     _url  = "https://www.youtube.com/playlist?list=PLCQf7od9epZmcWjwT3031Alo0KZFFM89f"
+    #_url  = "https://www.youtubeto.com/zh/?v=c9qdwZtzvbQ"
 
     yt_obj = YT_download(driver, _url)
     yt_obj.listDownload(_url)
-    
+
+    #yt_obj._download_youtubeto_(_url)
     #yt_obj.parseTubeList(_url)
 
     #_url  = "https://www.youtubeto.com/zh/?v=rXLU30MceTc"
