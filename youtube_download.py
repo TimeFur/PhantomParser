@@ -92,8 +92,8 @@ class YT_download():
     def listDownload(self, _url):
         self.youtube_list, self.youtubeto_list = self.parseTubeList(_url)
         
-        for l_url in self.youtubeto_list:
-            print ("Download " + l_url)
+        for i, l_url in enumerate(self.youtubeto_list):
+            print ("Download " + l_url + "-----" + str(i))
             self._download_youtubeto_(l_url)
             #sleep(1)            
 
@@ -137,6 +137,7 @@ class YT_download():
         result_to_pattern = "https://www.youtubeto.com"
         
         current_list = []
+        list_tmp = []
         result_list = []
         result_to_list = []
         
@@ -146,14 +147,23 @@ class YT_download():
         print ("======Get item======")
         
         soup = BeautifulSoup(self.driver.page_source, "html.parser")
-        current_list = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
+        
+        list_tmp = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
+        while current_list != list_tmp:
+            current_list = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
+
+            self.driver.execute_script("window.scrollTo(0, document.documentElement.scrollHeight);")
+            
+            sleep(5)
+            soup = BeautifulSoup(self.driver.page_source, "html.parser")
+            list_tmp = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
+        
         for l in current_list:
             website = l['href']
             msg = website[:website.find("&list")]
             result_list.append(result_pattern + msg)
             result_to_list.append(result_to_pattern + msg)
-        print (result_list)
-        print (result_to_list)
+        print ("result_list = " + str(len(result_list)))
         print ("======Done======")
         return result_list, result_to_list
         
@@ -166,7 +176,7 @@ def main():
 
 
     #---------------------Flow------------------------------
-    _url  = "https://www.youtube.com/playlist?list=PLCQf7od9epZmcWjwT3031Alo0KZFFM89f"
+    _url  = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ4OHFXaTEr1agQyeQd_GEA_"
     #_url  = "https://www.youtubeto.com/zh/?v=c9qdwZtzvbQ"
 
     yt_obj = YT_download(driver, _url)
