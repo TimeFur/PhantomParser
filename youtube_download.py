@@ -22,52 +22,7 @@ class YT_download():
 
         self.once_flag = True
         self.main_window = None
-        
-    def showlist(self):
-        pass
-        print (help(gdata))
 
-    def download(self, _url):
-
-        timeout = 0
-        convert_url = "https://www.converto.io/en"
-        self.driver.get(convert_url)
-
-        #self.main_window = self.driver.current_window_handle
-        #self.driver.switch_to_window(self.main_window)
-        print ("Access to download website")
-        
-        #
-        while (self.driver.page_source.find("youtube-url")) < 0:
-            pass
-        text_bar = self.driver.find_element_by_id("youtube-url")
-        text_bar.send_keys(_url)
-        print ("Send url done~")
-        
-        #
-        while (self.driver.page_source.find("display: inline-block;")) < 0:
-            pass
-        covert_btn = self.driver.find_element_by_css_selector("a.btn.lg.convert-btn")
-        while covert_btn.is_displayed() == False:
-            pass
-        covert_btn.click()
-        print ("Click covert done~")
-        #self.driver.switch_to_window(self.main_window)
-        print (self.driver.window_handles)
-        
-        #
-        while (self.driver.page_source.find("Click here")) < 0:
-            timeout += 1
-            if timeout > 1000:
-                timeout = 0
-                covert_btn.click()
-            pass
-        download_btn = self.driver.find_element_by_id("download-url")
-        while download_btn.is_displayed() == False:
-            pass
-        download_btn.click()
-        print ("Download click done~")
-        
     def _download_youtubeto_(self, _url):
         iframe_pop_pattern = "MP3Format"
         default_pattern = "DownloadMP3_text"
@@ -83,7 +38,7 @@ class YT_download():
         
         print ("Click download")
         try:
-            print self.driver.find_element_by_id(iframe_pop_pattern)
+            print (self.driver.find_element_by_id(iframe_pop_pattern))
             self.driver.find_element_by_id(iframe_pop_pattern).click()
         except:
             self.driver.switch_to_default_content()
@@ -92,10 +47,18 @@ class YT_download():
     def listDownload(self, _url):
         self.youtube_list, self.youtubeto_list = self.parseTubeList(_url)
         
+        main_tab = self.driver.current_window_handle
+        print ("Main tab = " + str(main_tab))
+        
         for i, l_url in enumerate(self.youtubeto_list):
             print ("Download " + l_url + "-----" + str(i))
             self._download_youtubeto_(l_url)
-            #sleep(1)            
+            
+            for i, handle in enumerate(self.driver.window_handles):
+                if handle != main_tab:
+                    self.driver.switch_to_window(handle)
+                    self.driver.close()
+            self.driver.switch_to_window(main_tab) #Back to main tab
 
     def test(self, _url):
         pattern = "yt-live-chat-text-message-renderer"
@@ -174,21 +137,14 @@ def main():
     chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
     driver = webdriver.Chrome(chrome_path)
 
-
     #---------------------Flow------------------------------
     _url  = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ4OHFXaTEr1agQyeQd_GEA_"
-    #_url  = "https://www.youtubeto.com/zh/?v=c9qdwZtzvbQ"
 
     yt_obj = YT_download(driver, _url)
     yt_obj.listDownload(_url)
 
-    #yt_obj._download_youtubeto_(_url)
-    #yt_obj.parseTubeList(_url)
-
-    #_url  = "https://www.youtubeto.com/zh/?v=rXLU30MceTc"
-    #yt_obj.download(_url)
-    
-    #driver.close()
+    #---------------------Close driver------------------------------
+    driver.close()
     
 if __name__ == "__main__":
     main()
