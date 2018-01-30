@@ -26,10 +26,15 @@ class LineTV_download():
         self.main_window = None
 
     def _download_(self, _url):
+        '''
         res = requests.get(_url)
-        with io.open("1.mp4", 'wb') as f:
-            f.write(res.text)
-
+        s = res.text
+        
+        with io.open("1.mp4", 'w') as f:
+            f.write(s)
+        '''
+        self.driver.get(_url)
+        sleep(10)
     def show_link(self, _url):
         pattern = "subt-font-2 subt-bg-transparent subt-color-white _hide_controls"
         download_link_list = []
@@ -135,6 +140,7 @@ def main():
     #linetv_obj.show_link(_url)
 
     _url  = "https://tv-line.pstatic.net/global/read/navertv_2018_01_26_16/hls/2e5840de-0243-11e8-999e-0000000049b9-000043.ts?__gda__=1517328189_9e3498a8a929851e54a9c5660d8568fa"
+    #_url  = "http://python.ez2learn.com/basic/unicode.html"
     linetv_obj._download_(_url)
     
 
