@@ -30,11 +30,15 @@ class LineTV_download():
         #non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 0xfffd)
         #s = (res.text.translate(non_bmp_map))
         #s = (res.text.encode())
-        
-        res = requests.get(_url)
-        
-        with io.open("1.mp4", 'wb') as f:
-            f.write(res.content)
+        res = None
+        try:
+            res = requests.get(_url, stream = True) #stream iset as True, make the response header
+            with open("1.mp4", 'ab') as f:
+                f.write(res.content) #content id not saving the all data in single string
+            return True
+        except:
+            print ("Not download")
+            return False
         
         
     def show_link(self, _url):
@@ -51,13 +55,25 @@ class LineTV_download():
         for i in _list:
             main_link = i['data-src']
 
-        for i in range(100):
+        for i in range(1000):
             num = '-' + str(i).zfill(6) + '.ts'
             link = main_link.replace('.m3u8', num)
             download_link_list.append(link)
-            print (link)
+            #print (link)
+        self.driver.close()
+        
         return download_link_list
     
+    def Download_flow (self, _url):
+        download_link_list = self.show_link(_url)
+        for i, link in enumerate(download_link_list):
+            print ("Download..." + str(i))
+            result_flag = self._download_(link)
+            if result_flag == False:
+                print ("Suspend download")
+                return True
+            
+        
     def test(self, _url):
         pattern = "yt-live-chat-text-message-renderer"
         previous_chat_list = []
@@ -136,18 +152,22 @@ def main():
     driver = webdriver.Chrome(chrome_path)
 
     #---------------------Flow------------------------------
-    _url  = "https://tv.line.me/v/2612428_lunam-%E6%88%91%E7%9A%84%E7%94%B7%E5%AD%A9-ep6-1"
+    _url  = "https://tv.line.me/v/2618770_chocola-bb-%E7%8D%85%E5%AD%90%E7%8E%8B%E5%BC%B7%E5%A4%A7-ep9-1"
 
     linetv_obj = LineTV_download(driver, _url)
     #linetv_obj.show_link(_url)
 
-    _url  = "https://tv-line.pstatic.net/global/read/navertv_2018_01_26_16/hls/2e5840de-0243-11e8-999e-0000000049b9-000098.ts?__gda__=1517415988_9ab590e41a85e70d623b80c920f62bc6"
+    #_url  = "https://tv-line.pstatic.net/global/read/navertv_2018_01_26_16/hls/2e5840de-0243-11e8-999e-0000000049b9-000098.ts?__gda__=1517415988_9ab590e41a85e70d623b80c920f62bc6"
     #_url  = "http://python.ez2learn.com/basic/unicode.html"
-    linetv_obj._download_(_url)
+    #linetv_obj._download_(_url)
+    linetv_obj.Download_flow(_url)
     
 
     #---------------------Close driver------------------------------
-    driver.close()
+    try:
+        driver.close()
+    except:
+        pass
     
 if __name__ == "__main__":
     main()
