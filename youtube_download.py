@@ -7,15 +7,20 @@ from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.alert import Alert
 from time import sleep
+import os
 
 #logging.basicConfig(level = logging.DEBUG)
 
 # The youtube should be used the latest browser for parsing chat data
 
 def folder_list(path):
-    print "Folder"
+    #os.walk lists three element in recursively and each tuple represent
+    #('path', 'folder', 'file')
     
-
+    for dirName, dirNames, fileNmaes in os.walk(path):
+        if dirName.find(".git") == -1:
+            print fileNmaes
+            
 class YT_download():
 
     def __init__ (self, driver, _url):
@@ -156,8 +161,9 @@ def main():
     _url  = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ4OHFXaTEr1agQyeQd_GEA_"
 
     yt_obj = YT_download(driver, _url)
-    a, b, c = yt_obj.parseTubeList(_url)
-    print c
+    #a, b, c = yt_obj.parseTubeList(_url)
+    #print c
+    folder_list("E:\\workspace\\twitch chat parse\\")
 
     #---------------------Close driver------------------------------
     driver.close()
