@@ -12,6 +12,10 @@ from time import sleep
 
 # The youtube should be used the latest browser for parsing chat data
 
+def folder_list(path):
+    print "Folder"
+    
+
 class YT_download():
 
     def __init__ (self, driver, _url):
@@ -96,13 +100,17 @@ class YT_download():
 
     def parseTubeList(self, _url):
         pattern = "yt-simple-endpoint style-scope ytd-playlist-video-renderer"
+        title_pattern = "style-scope ytd-playlist-video-renderer"
+        
         result_pattern = "https://www.youtube.com"
         result_to_pattern = "https://www.youtubeto.com"
         
         current_list = []
+        name_list = []
         list_tmp = []
         result_list = []
         result_to_list = []
+        result_name_list = []
         
         self.driver.get(_url)
         while (self.driver.page_source.find(pattern)) < 0:
@@ -112,23 +120,30 @@ class YT_download():
         soup = BeautifulSoup(self.driver.page_source, "html.parser")
         
         list_tmp = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
+        name_list_tmp = soup.find_all("span", class_ = title_pattern, title = True) # Find the keyword through pattern
+        
         while current_list != list_tmp:
             current_list = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
+            name_list = soup.find_all("span", class_ = title_pattern, title = True) # Find the keyword through pattern
 
-            self.driver.execute_script("window.scrollTo(0, document.documentElement.scrollHeight);")
-            
+            self.driver.execute_script("window.scrollTo(0, document.documentElement.scrollHeight);") #scroll down
             sleep(5)
+            
             soup = BeautifulSoup(self.driver.page_source, "html.parser")
             list_tmp = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
+            name_list_tmp = soup.find_all("span", class_ = title_pattern, title = True) # Find the keyword through pattern
         
-        for l in current_list:
+        for i, l in zip(name_list, current_list):
             website = l['href']
             msg = website[:website.find("&list")]
+            
             result_list.append(result_pattern + msg)
             result_to_list.append(result_to_pattern + msg)
+            result_name_list.append(i['title'])
+            
         print ("result_list = " + str(len(result_list)))
         print ("======Done======")
-        return result_list, result_to_list
+        return result_list, result_to_list, result_name_list
         
 def main():
     #---------------------Selenium Driver------------------------------
@@ -141,7 +156,8 @@ def main():
     _url  = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ4OHFXaTEr1agQyeQd_GEA_"
 
     yt_obj = YT_download(driver, _url)
-    yt_obj.listDownload(_url)
+    a, b, c = yt_obj.parseTubeList(_url)
+    print c
 
     #---------------------Close driver------------------------------
     driver.close()

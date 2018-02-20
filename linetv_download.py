@@ -14,7 +14,7 @@ from time import sleep
 
 # The youtube should be used the latest browser for parsing chat data
 
-class LineTV_download():
+class LineTV():
 
     def __init__ (self, driver, _url):
         self.driver = driver
@@ -24,6 +24,7 @@ class LineTV_download():
 
         self.once_flag = True
         self.main_window = None
+        self.downloadsize = 2000
 
     def _download_(self, _url):
 
@@ -55,7 +56,7 @@ class LineTV_download():
         for i in _list:
             main_link = i['data-src']
 
-        for i in range(1000):
+        for i in range(self.downloadsize):
             num = '-' + str(i).zfill(6) + '.ts'
             link = main_link.replace('.m3u8', num)
             download_link_list.append(link)
@@ -152,9 +153,9 @@ def main():
     driver = webdriver.Chrome(chrome_path)
 
     #---------------------Flow------------------------------
-    _url  = "https://tv.line.me/v/2618770_chocola-bb-%E7%8D%85%E5%AD%90%E7%8E%8B%E5%BC%B7%E5%A4%A7-ep9-1"
+    _url  = "https://tv.line.me/v/2453481_lunam-%E6%88%91%E7%9A%84%E7%94%B7%E5%AD%A9-ep1-1"
 
-    linetv_obj = LineTV_download(driver, _url)
+    linetv_obj = LineTV(driver, _url)
     #linetv_obj.show_link(_url)
 
     #_url  = "https://tv-line.pstatic.net/global/read/navertv_2018_01_26_16/hls/2e5840de-0243-11e8-999e-0000000049b9-000098.ts?__gda__=1517415988_9ab590e41a85e70d623b80c920f62bc6"
