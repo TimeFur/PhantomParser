@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import requests
 import logging
 import json
@@ -21,14 +23,14 @@ DOWNLOAD_URL = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ4OHFXaTEr1agQy
 def folder_list(path):
 
     file_list = []
-    
+    print "===== Exist Files ====="
     #os.walk lists three element in recursively and each tuple represent
     #('path', 'folder', 'file')
-    print "===== Exist Files ====="
-    for dirName, dirNames, fileNmaes in os.walk(path):
+    for dirName, dirNames, fileNames in os.walk(path):
         if dirName.find(".git") == -1:
-            file_list.append(fileNmaes)
-            print fileNmaes
+            for i in fileNames:
+                file_list.append((i[:-4])) #Remove the ".mp3"
+                print i[:-4]
     print "======================="
     return file_list
             
@@ -53,10 +55,10 @@ class YT_download():
          
         while (self.driver.page_source.find(pattern)) < 0:
             pass
-        print ("iframe get")
+        #print ("iframe get")
         frm_template = self.driver.switch_to.frame(self.driver.find_element_by_id(pattern))
         
-        print ("Click download")
+        #print ("Click download")
         try:
             print (self.driver.find_element_by_id(iframe_pop_pattern))
             self.driver.find_element_by_id(iframe_pop_pattern).click()
@@ -71,11 +73,13 @@ class YT_download():
         print ("Main tab = " + str(main_tab))
         
         for i, l_url in enumerate(self.youtube_list):
-            print ("Download " + l_url['Title'] + "-----" + str(i))
-            if l_url['Title'] not in exist_file:
+            #print ("Download " + l_url['Title'] + "-----" + str(i))
+            title = (l_url['Title'])
+            print title
+            if title not in exist_file:
                 self._download_youtubeto_(l_url['Download'])
             else:
-                print l_url['Title'] + " is exist"
+                print title + " is exist"
                 
             #Close other windows
             for i, handle in enumerate(self.driver.window_handles):
