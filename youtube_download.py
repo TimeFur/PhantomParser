@@ -12,14 +12,25 @@ import os
 #logging.basicConfig(level = logging.DEBUG)
 
 # The youtube should be used the latest browser for parsing chat data
+'''------------------------------
+        Default Setting
+------------------------------'''
+EXIST_DIR_PATH = "C:\\Users\\djs86\\Downloads\\"
+DOWNLOAD_URL = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ4OHFXaTEr1agQyeQd_GEA_"
 
 def folder_list(path):
+
+    file_list = []
+    
     #os.walk lists three element in recursively and each tuple represent
     #('path', 'folder', 'file')
-    
+    print "===== Exist Files ====="
     for dirName, dirNames, fileNmaes in os.walk(path):
         if dirName.find(".git") == -1:
+            file_list.append(fileNmaes)
             print fileNmaes
+    print "======================="
+    return file_list
             
 class YT_download():
 
@@ -53,16 +64,20 @@ class YT_download():
             self.driver.switch_to_default_content()
             self.driver.find_element_by_id(default_pattern).click()
         
-    def listDownload(self, _url):
-        self.youtube_list, self.youtubeto_list = self.parseTubeList(_url)
+    def listDownload(self, _url, exist_file):
+        self.youtube_list = self.parseTubeList(_url)
         
         main_tab = self.driver.current_window_handle
         print ("Main tab = " + str(main_tab))
         
-        for i, l_url in enumerate(self.youtubeto_list):
-            print ("Download " + l_url + "-----" + str(i))
-            self._download_youtubeto_(l_url)
-            
+        for i, l_url in enumerate(self.youtube_list):
+            print ("Download " + l_url['Title'] + "-----" + str(i))
+            if l_url['Title'] not in exist_file:
+                self._download_youtubeto_(l_url['Download'])
+            else:
+                print l_url['Title'] + " is exist"
+                
+            #Close other windows
             for i, handle in enumerate(self.driver.window_handles):
                 if handle != main_tab:
                     self.driver.switch_to_window(handle)
@@ -116,6 +131,7 @@ class YT_download():
         result_list = []
         result_to_list = []
         result_name_list = []
+        result_dict = []
         
         self.driver.get(_url)
         while (self.driver.page_source.find(pattern)) < 0:
@@ -137,7 +153,13 @@ class YT_download():
             soup = BeautifulSoup(self.driver.page_source, "html.parser")
             list_tmp = soup.find_all("a", class_ = pattern, href = True) # Find the keyword through pattern
             name_list_tmp = soup.find_all("span", class_ = title_pattern, title = True) # Find the keyword through pattern
-        
+
+
+        if len(name_list) == len(current_list):
+            print "Same amount of title and link"
+        else:
+            print "Error amount of title and link!!!"
+            
         for i, l in zip(name_list, current_list):
             website = l['href']
             msg = website[:website.find("&list")]
@@ -145,10 +167,14 @@ class YT_download():
             result_list.append(result_pattern + msg)
             result_to_list.append(result_to_pattern + msg)
             result_name_list.append(i['title'])
+
+            result_dict.append({"Link": (result_pattern + msg),
+                                "Download": (result_to_pattern + msg),
+                                "Title": (i['title'])})
             
         print ("result_list = " + str(len(result_list)))
         print ("======Done======")
-        return result_list, result_to_list, result_name_list
+        return result_dict
         
 def main():
     #---------------------Selenium Driver------------------------------
@@ -158,12 +184,11 @@ def main():
     driver = webdriver.Chrome(chrome_path)
 
     #---------------------Flow------------------------------
-    _url  = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ4OHFXaTEr1agQyeQd_GEA_"
-
+    _url  = DOWNLOAD_URL
     yt_obj = YT_download(driver, _url)
-    #a, b, c = yt_obj.parseTubeList(_url)
-    #print c
-    folder_list("E:\\workspace\\twitch chat parse\\")
+    
+    exist_file = folder_list(EXIST_DIR_PATH)
+    yt_obj.listDownload(_url, exist_file)
 
     #---------------------Close driver------------------------------
     driver.close()
