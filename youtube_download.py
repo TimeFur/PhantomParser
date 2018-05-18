@@ -7,11 +7,28 @@ from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.alert import Alert
 from time import sleep
-
+import pafy
 #logging.basicConfig(level = logging.DEBUG)
 
 # The youtube should be used the latest browser for parsing chat data
 
+
+class Pafy_obj():
+    def __init__ (self, url):
+        self._url = url
+        self.pafy_obj_list = None
+        self.pafy_obj = None
+        
+        if (self._url.find("playlist") > 0):
+            self.pafy_obj_list = pafy.get_playlist(self._url)
+        else:
+            self.pafy_obj = pafy.new(self._url)
+        
+    def download(self, download_url):
+        self.pafy_obj = pafy.new(download_url)
+        stream = self.pafy_obj.getbestaudio()
+        filename = stream.download()
+    
 class YT_download():
 
     def __init__ (self, driver, _url):
@@ -129,8 +146,8 @@ class YT_download():
         print ("result_list = " + str(len(result_list)))
         print ("======Done======")
         return result_list, result_to_list
-        
-def main():
+
+def AutoSeleFlow():
     #---------------------Selenium Driver------------------------------
     #driver = webdriver.PhantomJS()
     #driver = webdriver.Firefox()
@@ -145,6 +162,15 @@ def main():
 
     #---------------------Close driver------------------------------
     driver.close()
+
+def PafyFlow():
+    _url  = "https://www.youtube.com/watch?v=S85Z3i_8wrY"
+    yt_obj = Pafy_obj(_url)
+    yt_obj.download(_url)
+    
+def main():
+    #AutoSeleFlow()
+    PafyFlow()
     
 if __name__ == "__main__":
     main()
