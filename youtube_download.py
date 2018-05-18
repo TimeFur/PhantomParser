@@ -27,8 +27,14 @@ class Pafy_obj():
     def download(self, download_url):
         self.pafy_obj = pafy.new(download_url)
         stream = self.pafy_obj.getbestaudio()
-        filename = stream.download()
-    
+
+        print self.pafy_obj.title
+        
+        filename = stream.download(quiet = True, callback = self.mycb)
+
+    def mycb(self, total, recvd, ratio, rate, eta):
+        print(recvd, ratio, eta)
+        
 class YT_download():
 
     def __init__ (self, driver, _url):
