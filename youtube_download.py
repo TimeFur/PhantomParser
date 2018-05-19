@@ -11,6 +11,7 @@ from selenium.webdriver.common.alert import Alert
 from time import sleep
 import os
 
+import pafy
 #logging.basicConfig(level = logging.DEBUG)
 
 # The youtube should be used the latest browser for parsing chat data
@@ -21,7 +22,6 @@ EXIST_DIR_PATH = "C:\\Users\\djs86\\Downloads\\"
 DOWNLOAD_URL = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ4OHFXaTEr1agQyeQd_GEA_"
 
 def folder_list(path):
-
     file_list = []
     print "===== Exist Files ====="
     #os.walk lists three element in recursively and each tuple represent
@@ -33,6 +33,58 @@ def folder_list(path):
                 print i[:-4]
     print "======================="
     return file_list
+
+class Pafy_obj():
+    def __init__ (self, url):
+        self._url = url
+        self.pafy_obj_list = None
+        self.pafy_obj = None
+        
+        if (self._url.find("playlist") > 0):
+            self.pafy_obj_list = pafy.get_playlist(self._url)
+        else:
+            self.pafy_obj = pafy.new(self._url)
+        
+    def download(self, download_url):
+        self.pafy_obj = pafy.new(download_url)
+        stream = self.pafy_obj.getbestaudio() #Return the stream type
+
+        print self.pafy_obj.title
+        
+        filename = stream.download(quiet = True, callback = self.mycb)
+
+    def playlistdownload(self, list_url):
+        self.pafy_obj = pafy.get_playlist(list_url)
+        print "List is almost ", len(self.pafy_obj['items'])
+        for i in range (len(self.pafy_obj['items'])):
+            print self.pafy_obj['items'][i]['pafy'].title
+
+            filename = self._check_filename(self.pafy_obj['items'][i]['pafy'].title)
+                        
+            stream = self.pafy_obj['items'][i]['pafy'].getbestaudio()
+            
+            stream.download(filepath = './' + filename + '.mp3',quiet = True, callback = self.mycb)
+            
+    #Chuck download
+    #Total bytes in stream (int)
+    #Total bytes in downloaded (int)
+    #ratio download (float)
+    #download rate (kbps) (float)
+    #ETA in seconds (float)
+    def mycb(self, total, recvd, ratio, rate, eta):
+        print(recvd, ratio, eta)
+
+    def _check_filename(self, f):
+        f = f.replace('<', '')
+        f = f.replace('>', '')
+        f = f.replace(':', '')
+        f = f.replace('"', '')
+        f = f.replace('/', '')
+        f = f.replace('\\', '')
+        f = f.replace('|', '')
+        f = f.replace('?', '')
+        f = f.replace('*', '')
+        return f
             
 class YT_download():
 
@@ -178,9 +230,10 @@ class YT_download():
             
         print ("result_list = " + str(len(result_list)))
         print ("======Done======")
-        return result_dict
-        
-def main():
+
+        return result_list, result_to_list
+
+def AutoSeleFlow():
     #---------------------Selenium Driver------------------------------
     #driver = webdriver.PhantomJS()
     #driver = webdriver.Firefox()
@@ -196,6 +249,18 @@ def main():
 
     #---------------------Close driver------------------------------
     driver.close()
+
+def PafyFlow():
+    _url  = "https://www.youtube.com/watch?v=WmW9nqQ1l1o"
+    _url  = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ5GjqDxCSnyEdnr0Sn5Yp1e"
+    yt_obj = Pafy_obj(_url)
+    
+    #yt_obj.download(_url)
+    yt_obj.playlistdownload(_url)
+    
+def main():
+    #AutoSeleFlow()
+    PafyFlow()
     
 if __name__ == "__main__":
     main()
