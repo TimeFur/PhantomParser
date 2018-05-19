@@ -37,8 +37,12 @@ class Pafy_obj():
         print "List is almost ", len(self.pafy_obj['items'])
         for i in range (len(self.pafy_obj['items'])):
             print self.pafy_obj['items'][i]['pafy'].title
+
+            filename = self._check_filename(self.pafy_obj['items'][i]['pafy'].title)
+                        
             stream = self.pafy_obj['items'][i]['pafy'].getbestaudio()
-            stream.download(quiet = True, callback = self.mycb)
+            
+            stream.download(filepath = './' + filename + '.mp3',quiet = True, callback = self.mycb)
             
     #Chuck download
     #Total bytes in stream (int)
@@ -48,7 +52,19 @@ class Pafy_obj():
     #ETA in seconds (float)
     def mycb(self, total, recvd, ratio, rate, eta):
         print(recvd, ratio, eta)
-        
+
+    def _check_filename(self, f):
+        f = f.replace('<', '')
+        f = f.replace('>', '')
+        f = f.replace(':', '')
+        f = f.replace('"', '')
+        f = f.replace('/', '')
+        f = f.replace('\\', '')
+        f = f.replace('|', '')
+        f = f.replace('?', '')
+        f = f.replace('*', '')
+        return f
+            
 class YT_download():
 
     def __init__ (self, driver, _url):
