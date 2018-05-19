@@ -26,12 +26,26 @@ class Pafy_obj():
         
     def download(self, download_url):
         self.pafy_obj = pafy.new(download_url)
-        stream = self.pafy_obj.getbestaudio()
+        stream = self.pafy_obj.getbestaudio() #Return the stream type
 
         print self.pafy_obj.title
         
         filename = stream.download(quiet = True, callback = self.mycb)
 
+    def playlistdownload(self, list_url):
+        self.pafy_obj = pafy.get_playlist(list_url)
+        print "List is almost ", len(self.pafy_obj['items'])
+        for i in range (len(self.pafy_obj['items'])):
+            print self.pafy_obj['items'][i]['pafy'].title
+            stream = self.pafy_obj['items'][i]['pafy'].getbestaudio()
+            stream.download(quiet = True, callback = self.mycb)
+            
+    #Chuck download
+    #Total bytes in stream (int)
+    #Total bytes in downloaded (int)
+    #ratio download (float)
+    #download rate (kbps) (float)
+    #ETA in seconds (float)
     def mycb(self, total, recvd, ratio, rate, eta):
         print(recvd, ratio, eta)
         
@@ -170,9 +184,12 @@ def AutoSeleFlow():
     driver.close()
 
 def PafyFlow():
-    _url  = "https://www.youtube.com/watch?v=S85Z3i_8wrY"
+    _url  = "https://www.youtube.com/watch?v=WmW9nqQ1l1o"
+    _url  = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ5GjqDxCSnyEdnr0Sn5Yp1e"
     yt_obj = Pafy_obj(_url)
-    yt_obj.download(_url)
+    
+    #yt_obj.download(_url)
+    yt_obj.playlistdownload(_url)
     
 def main():
     #AutoSeleFlow()
