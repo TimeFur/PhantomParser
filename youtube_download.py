@@ -83,7 +83,7 @@ class Pafy_obj(threading.Thread):
             filename = self._check_filename(link.title)
             stream = link.getbestaudio()
             stream.download(filepath = './' + filename + '.mp3',quiet = True)
-            print link.title + "Done"
+            
     #Chuck download
     #Total bytes in stream (int)
     #Total bytes in downloaded (int)
@@ -269,11 +269,13 @@ def AutoSeleFlow():
     #---------------------Close driver------------------------------
     driver.close()
 
-def Mutiple_thread_download(list_url):
+def Mutiple_thread_download(list_url, thread_num):
 
-    #Get the stream data into Queue
     stream_queue = queue.Queue()
     pafy_obj = Pafy_obj().pafy_list_obj(list_url)
+    threads = []
+    
+    #Get the stream data into Queue
     for i in range(len(pafy_obj['items'])):
         print pafy_obj['items'][i]['pafy'].title
         #stream = pafy_obj['items'][i]['pafy'].getbestaudio()
@@ -281,20 +283,12 @@ def Mutiple_thread_download(list_url):
         stream_queue.put(_link)
 
     #Create the thread
-    p1 = Pafy_obj(stream_queue)
-    p1.start()
-    
-    p2 = Pafy_obj(stream_queue)
-    p2.start()
-    
-    p3 = Pafy_obj(stream_queue)
-    p3.start()
-    
-
-    #
-    p1.join()
-    p2.join()
-    p3.join()
+    for i in range(thread_num):
+        threads.append(Pafy_obj(stream_queue))
+        threads[i].start()
+        
+    for _thread in threads:
+        _thread.join()
     
     
 def PafyFlow():
@@ -304,7 +298,7 @@ def PafyFlow():
     yt_obj = Pafy_obj(_url)
     
     #yt_obj.download(_url)
-    Mutiple_thread_download(_url)
+    Mutiple_thread_download(_url, 5)
     
 def main():
     #AutoSeleFlow()
