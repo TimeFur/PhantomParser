@@ -14,7 +14,7 @@ import os
 import pafy
 import threading
 import Queue as queue
-
+import time
 #logging.basicConfig(level = logging.DEBUG)
 
 # The youtube should be used the latest browser for parsing chat data
@@ -39,7 +39,8 @@ def folder_list(path):
 
 class Pafy_obj(threading.Thread):
     def __init__ (self, queue = None):
-
+        threading.Thread.__init__(self)
+        
         self.pafy_obj_list = None
         self.pafy_obj = None
         self.queue = queue
@@ -76,8 +77,13 @@ class Pafy_obj(threading.Thread):
             return False
         
         while self.queue.qsize() > 0:
-            _stream = self.queue.get()
-            
+            link = self.queue.get()
+
+            print link.title + "Downloading..."
+            filename = self._check_filename(link.title)
+            stream = link.getbestaudio()
+            stream.download(filepath = './' + filename + '.mp3',quiet = True)
+            print link.title + "Done"
     #Chuck download
     #Total bytes in stream (int)
     #Total bytes in downloaded (int)
@@ -270,11 +276,25 @@ def Mutiple_thread_download(list_url):
     pafy_obj = Pafy_obj().pafy_list_obj(list_url)
     for i in range(len(pafy_obj['items'])):
         print pafy_obj['items'][i]['pafy'].title
-        stream = pafy_obj['items'][i]['pafy'].getbestaudio()
-        stream_queue.put(stream)
+        #stream = pafy_obj['items'][i]['pafy'].getbestaudio()
+        _link = pafy_obj['items'][i]['pafy']
+        stream_queue.put(_link)
 
     #Create the thread
-        
+    p1 = Pafy_obj(stream_queue)
+    p1.start()
+    
+    p2 = Pafy_obj(stream_queue)
+    p2.start()
+    
+    p3 = Pafy_obj(stream_queue)
+    p3.start()
+    
+
+    #
+    p1.join()
+    p2.join()
+    p3.join()
     
     
 def PafyFlow():
