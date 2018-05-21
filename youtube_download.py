@@ -12,6 +12,9 @@ from time import sleep
 import os
 
 import pafy
+import threading
+import Queue as queue
+
 #logging.basicConfig(level = logging.DEBUG)
 
 # The youtube should be used the latest browser for parsing chat data
@@ -34,22 +37,18 @@ def folder_list(path):
     print "======================="
     return file_list
 
-class Pafy_obj():
-    def __init__ (self, url):
-        self._url = url
+class Pafy_obj(threading.Thread):
+    def __init__ (self, queue = None):
+
         self.pafy_obj_list = None
         self.pafy_obj = None
-        
-        if (self._url.find("playlist") > 0):
-            self.pafy_obj_list = pafy.get_playlist(self._url)
-        else:
-            self.pafy_obj = pafy.new(self._url)
+        self.queue = queue
         
     def download(self, download_url):
-        self.pafy_obj = pafy.new(download_url)
-        stream = self.pafy_obj.getbestaudio() #Return the stream type
+        pafy_obj = pafy.new(download_url)
+        stream = pafy_obj.getbestaudio() #Return the stream type
 
-        print self.pafy_obj.title
+        print pafy_obj.title
         
         filename = stream.download(quiet = True, callback = self.mycb)
 
@@ -64,6 +63,20 @@ class Pafy_obj():
             stream = self.pafy_obj['items'][i]['pafy'].getbestaudio()
             
             stream.download(filepath = './' + filename + '.mp3',quiet = True, callback = self.mycb)
+
+
+    def pafy_list_obj(self, list_url):
+                
+        self.pafy_obj_list = pafy.get_playlist(list_url)
+        return self.pafy_obj_list
+
+    def run(self):
+        if self.queue == None:
+            print "The Queue is empty!!!"
+            return False
+        
+        while self.queue.qsize() > 0:
+            _stream = self.queue.get()
             
     #Chuck download
     #Total bytes in stream (int)
@@ -250,13 +263,28 @@ def AutoSeleFlow():
     #---------------------Close driver------------------------------
     driver.close()
 
+def Mutiple_thread_download(list_url):
+
+    #Get the stream data into Queue
+    stream_queue = queue.Queue()
+    pafy_obj = Pafy_obj().pafy_list_obj(list_url)
+    for i in range(len(pafy_obj['items'])):
+        print pafy_obj['items'][i]['pafy'].title
+        stream = pafy_obj['items'][i]['pafy'].getbestaudio()
+        stream_queue.put(stream)
+
+    #Create the thread
+        
+    
+    
 def PafyFlow():
-    _url  = "https://www.youtube.com/watch?v=WmW9nqQ1l1o"
-    _url  = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ5GjqDxCSnyEdnr0Sn5Yp1e"
+    _url  = "https://www.youtube.com/watch?v=VgjCj5Fj1Ts"
+    _url  = "https://www.youtube.com/playlist?list=PLCQf7od9epZmcWjwT3031Alo0KZFFM89f"
+    
     yt_obj = Pafy_obj(_url)
     
     #yt_obj.download(_url)
-    yt_obj.playlistdownload(_url)
+    Mutiple_thread_download(_url)
     
 def main():
     #AutoSeleFlow()
