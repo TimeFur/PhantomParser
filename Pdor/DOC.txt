@@ -1,5 +1,0 @@
-export CLOUDSDK_PYTHON=/c/Python27/python
-cd ~/AppData/Local/Google/Cloud SDK/google-cloud-sdk
-./install.sh
-
-gcloud app deploy
