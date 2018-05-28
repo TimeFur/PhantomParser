@@ -10,4 +10,6 @@ class Stream_DB(models.Model):
     url = models.TextField(blank = True)
     photo = models.URLField(blank = True)
     created_at = models.DateTimeField(auto_now_add = True)
-    
+
+    def __str__(self):
+        return self.title
