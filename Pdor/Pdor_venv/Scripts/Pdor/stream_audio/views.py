@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
 from models import *
+import os
 
 MAIN_TEMPLATE = 'Main.html'
 
@@ -37,3 +38,20 @@ def get_stream_url(request):
     return render(request,
                   MAIN_TEMPLATE,
                   main_html_dict)
+
+def home_page(request):
+    '''
+    Stream_DB.objects.create(title = "Little Doll",
+                             url = "www.youtube.com",
+                             photo = "./Database/Image/LittleDoll.jpg")
+    '''
+    f = Stream_DB.objects.filter(title = "Little Doll")
+    f.update(photo = "\Database\Image\LittleDoll.jpg")
+    
+    print "Current path " + os.getcwd()
+    db_data = Stream_DB.objects.all()
+    main_html_dict = {'DB' : db_data}
+    return render(request,
+                  MAIN_TEMPLATE,
+                  main_html_dict)
+    

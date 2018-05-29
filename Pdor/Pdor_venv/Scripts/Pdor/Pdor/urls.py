@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from stream_audio.views import get_stream_url
+
+import stream_audio.views as stream
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^stream/$', get_stream_url),
+    url(r'^', stream.home_page),
+    url(r'^stream/$', stream.get_stream_url),
 ]
