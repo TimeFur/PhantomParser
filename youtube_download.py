@@ -50,8 +50,11 @@ class Pafy_obj(threading.Thread):
         stream = pafy_obj.getbestaudio() #Return the stream type
 
         print pafy_obj.title
+        filename = pafy_obj.title
         
-        filename = stream.download(quiet = True, callback = self.mycb)
+        filename = stream.download(filepath = './' + filename + '.mp3',
+                                   quiet = True,
+                                   callback = self.mycb)
 
     def playlistdownload(self, list_url):
         self.pafy_obj = pafy.get_playlist(list_url)
@@ -63,7 +66,9 @@ class Pafy_obj(threading.Thread):
                         
             stream = self.pafy_obj['items'][i]['pafy'].getbestaudio()
             
-            stream.download(filepath = './' + filename + '.mp3',quiet = True, callback = self.mycb)
+            stream.download(filepath = './' + filename + '.mp3',
+                            quiet = True,
+                            callback = self.mycb)
 
 
     def pafy_list_obj(self, list_url):
@@ -292,13 +297,20 @@ def Mutiple_thread_download(list_url, thread_num):
     
     
 def PafyFlow():
-    _url  = "https://www.youtube.com/watch?v=VgjCj5Fj1Ts"
-    _url  = "https://www.youtube.com/playlist?list=PLCQf7od9epZmcWjwT3031Alo0KZFFM89f"
-    
-    yt_obj = Pafy_obj(_url)
-    
-    #yt_obj.download(_url)
-    Mutiple_thread_download(_url, 5)
+    ytdl_type = raw_input("Choose the download type ([1]Single youtbe download. [2]Playlist download) :")
+
+    if ytdl_type == '1':
+        print "Download Single youtube"
+        _url = raw_input("Type the url : ")
+
+        yt_obj = Pafy_obj()
+        yt_obj.download(_url)
+    elif ytdl_type == '2':
+        print "Download Playlist"
+        _url = raw_input("Type the url : ")
+        Mutiple_thread_download(_url, 5)
+    else:
+        print "Do nothing"
     
 def main():
     #AutoSeleFlow()
