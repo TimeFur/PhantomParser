@@ -2,12 +2,14 @@
 
 <!DOCTYPE html>
 <html>
+	{% load static %}
 	<head>
 		<title>Pdor World</title>
 	</head>
 	
 	<body>
 		<h1>Show time</h1>
+		<img src = "{% static "img/LittleDoll.jpg" %}" alt = "My Image"/>
 		{% for data in DB%}
 			<p>
 			{{data.title}}
