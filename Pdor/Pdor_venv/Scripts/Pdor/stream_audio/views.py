@@ -31,15 +31,18 @@ def DB_practice():
     
 # Create your views here.
 def get_stream_url(request):
+    print "get_stream_url"
     #DB_practice()
     main_html_dict = {'current_time' : str(datetime.now())}
     
-    #return HttpResponse("Stream URL")
+    return HttpResponse("Stream URL")
+    '''
     return render(request,
                   MAIN_TEMPLATE,
                   main_html_dict)
-
+    '''
 def home_page(request):
+    print "home_page"
     '''
     Stream_DB.objects.create(title = "Little Doll",
                              url = "www.youtube.com",
@@ -54,4 +57,22 @@ def home_page(request):
     return render(request,
                   MAIN_TEMPLATE,
                   main_html_dict)
+
+def get_partial_model(request, pk):
+    print "get_partial_model"
+    print "~~~~~GET pk = " , pk, type(pk)
+    data = Stream_DB.objects.filter(title = "Little Doll")
+    main_html_dict = {'DB' : data}
+
+    
+    
+    return render(request,
+                  MAIN_TEMPLATE,
+                  main_html_dict)
+
+
+
+
+
+    
     

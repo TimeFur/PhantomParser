@@ -20,6 +20,7 @@ import stream_audio.views as stream
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^streams/$', stream.get_stream_url),
+    url(r'^stream/(?P<pk>\d+)/$', stream.get_partial_model),
     url(r'^', stream.home_page),
-    url(r'^stream/$', stream.get_stream_url),
 ]
