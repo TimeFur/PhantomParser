@@ -43,11 +43,14 @@ def get_stream_url(request):
     '''
 def home_page(request):
     print "home_page"
-    
-    #f = Stream_DB.objects.filter(title = "Little Doll")
-    #f[0].delete()
-    f = Stream_DB.objects.filter(title = "Little Doll")
-    print f
+    '''
+    f = Stream_DB.objects.filter(title = "LittleDoll")
+    if len(f) == 0:
+        Stream_DB.objects.create(title = "LittleDoll",
+                                 url = "https://www.youtube.com/embed/LXS-LbbqfCw",
+                                 photo = "static\img\LittleDoll.jpg")
+    '''
+    #f = Stream_DB.objects.filter(title = "LittleDoll")
     #f[0].delete()
     
     print "Current path " + os.getcwd()
