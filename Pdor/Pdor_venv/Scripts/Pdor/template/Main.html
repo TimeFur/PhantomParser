@@ -7,16 +7,16 @@
 		<title>Pdor World</title>
 	</head>
 	
-	<body>
+	<body background = "{% static "img/bg_0.jpg "%}">
 		<h1>Show time</h1>
-		<img src = "{% static "img/LittleDoll.jpg" %}" alt = "My Image"/>
 		{% for data in DB%}
 			<p>
 			{{data.title}}
 			{{data.url}}
 			{{data.photo}}
+			
 			{% if data.photo %}
-				<img src = "{{data.photo}}" alt="">
+				<img src = {{data.photo}} alt = ""/>
 			{% endif %}
 			{{data.created_at | date:"Y/m/d"}}
 			</p>

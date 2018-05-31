@@ -15,7 +15,7 @@ def DB_practice():
     #Create
     Stream_DB.objects.create(title = "_Practice",
                              url = "www.youtube.com",
-                             photo = "./Photo/img1.jpg")
+                             photo = "static\img\XXX.jpg")
     #Read
     show_db = Stream_DB.objects.all()
     print show_db[0].url
@@ -43,13 +43,12 @@ def get_stream_url(request):
     '''
 def home_page(request):
     print "home_page"
-    '''
-    Stream_DB.objects.create(title = "Little Doll",
-                             url = "www.youtube.com",
-                             photo = "./Database/Image/LittleDoll.jpg")
-    '''
+    
+    #f = Stream_DB.objects.filter(title = "Little Doll")
+    #f[0].delete()
     f = Stream_DB.objects.filter(title = "Little Doll")
-    f.update(photo = "\Database\Image\LittleDoll.jpg")
+    print f
+    #f[0].delete()
     
     print "Current path " + os.getcwd()
     db_data = Stream_DB.objects.all()
