@@ -99,6 +99,7 @@ class Pafy_obj(threading.Thread):
         print(recvd, ratio, eta)
 
     def _check_filename(self, f):
+        i = 0
         f = f.replace('<', '')
         f = f.replace('>', '')
         f = f.replace(':', '')
@@ -108,6 +109,11 @@ class Pafy_obj(threading.Thread):
         f = f.replace('|', '')
         f = f.replace('?', '')
         f = f.replace('*', '')
+        while f in os.listdir('.'):
+            print "File name " + f + " exist~~~"
+            f = f + "_" + str(i)
+            i += 1
+            
         return f
             
 class YT_download():
@@ -308,7 +314,7 @@ def PafyFlow():
     elif ytdl_type == '2':
         print "Download Playlist"
         _url = raw_input("Type the url : ")
-        Mutiple_thread_download(_url, 5)
+        Mutiple_thread_download(_url, 10)
     else:
         print "Do nothing"
     
