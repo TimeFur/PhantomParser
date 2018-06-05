@@ -2,6 +2,7 @@ phantomjs-2.1.1-windows/*
 
 *mp3
 *mp4
+*.temp
 *.exe
 *.pyc
 Pdor/Pdor_venv/Lib/site-packages/

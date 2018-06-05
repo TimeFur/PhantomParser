@@ -51,7 +51,7 @@ class Pafy_obj(threading.Thread):
 
         print pafy_obj.title
         filename = pafy_obj.title
-        
+
         filename = stream.download(filepath = './' + filename + '.mp3',
                                    quiet = True,
                                    callback = self.mycb)
@@ -62,13 +62,14 @@ class Pafy_obj(threading.Thread):
         for i in range (len(self.pafy_obj['items'])):
             print self.pafy_obj['items'][i]['pafy'].title
 
-            filename = self._check_filename(self.pafy_obj['items'][i]['pafy'].title)
-                        
-            stream = self.pafy_obj['items'][i]['pafy'].getbestaudio()
-            
-            stream.download(filepath = './' + filename + '.mp3',
-                            quiet = True,
-                            callback = self.mycb)
+            filename, checkbit = self._check_filename(self.pafy_obj['items'][i]['pafy'].title)
+
+            if checkbit == 0:                        
+                stream = self.pafy_obj['items'][i]['pafy'].getbestaudio()
+
+                stream.download(filepath = './' + filename + '.mp3',
+                                quiet = True,
+                                callback = self.mycb)
 
 
     def pafy_list_obj(self, list_url):
@@ -85,9 +86,11 @@ class Pafy_obj(threading.Thread):
             link = self.queue.get()
 
             print link.title + "Downloading..."
-            filename = self._check_filename(link.title)
-            stream = link.getbestaudio()
-            stream.download(filepath = './' + filename + '.mp3',quiet = True)
+            filename, checkbit= self._check_filename(link.title)
+
+            if checkbit == 0:
+                stream = link.getbestaudio()
+                stream.download(filepath = './' + filename + '.mp3',quiet = True)
             
     #Chuck download
     #Total bytes in stream (int)
@@ -109,12 +112,13 @@ class Pafy_obj(threading.Thread):
         f = f.replace('|', '')
         f = f.replace('?', '')
         f = f.replace('*', '')
-        while f in os.listdir('.'):
+
+        _filwname = f + '.mp3'
+        if _filwname in os.listdir('.'):
             print "File name " + f + " exist~~~"
-            f = f + "_" + str(i)
             i += 1
             
-        return f
+        return f, i
             
 class YT_download():
 
