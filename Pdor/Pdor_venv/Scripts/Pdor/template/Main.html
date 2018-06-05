@@ -7,7 +7,18 @@
 		<title>Pdor World</title>
 	</head>
 	
-	<body background = "{% static "img/bg_0.jpg "%}">
+	<body background = "{% static "img/bg_1.jpg "%}">
+	
+		<form>
+			<input type="text" name = "youtube_url">
+			<input type = "submit" value = "Submit">
+		</form>
+		
+		<audio controls autoplay>
+			<source src = "static/audio/Goodnight.mp3" type="audio/mpeg"/>
+			<em>Sorry, your browser doesn't support HTML5 audio.</em>
+		</audio>
+		
 		<h1>Show time</h1>
 		{% for data in DB%}
 			<p>
