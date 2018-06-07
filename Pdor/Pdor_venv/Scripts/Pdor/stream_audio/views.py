@@ -5,9 +5,12 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import datetime
 from models import *
-import os
+import os, sys
 from django.http import JsonResponse
 from django.shortcuts import render_to_response
+
+sys.path.append(os.getcwd() + "\stream_audio\Include")
+from youtube_download import *
 
 MAIN_TEMPLATE = 'Main.html'
 
@@ -77,7 +80,9 @@ def url_submit(request):
     url = ""
     if request.method == 'GET':
         url = request.GET['_url']
-        print url    
+        print url
+    
+    yt_audio_download(url)
 
     return HttpResponse("Get")
 
