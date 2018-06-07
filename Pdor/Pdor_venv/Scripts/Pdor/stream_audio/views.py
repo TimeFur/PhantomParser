@@ -6,6 +6,8 @@ from django.http import HttpResponse
 from datetime import datetime
 from models import *
 import os
+from django.http import JsonResponse
+from django.shortcuts import render_to_response
 
 MAIN_TEMPLATE = 'Main.html'
 
@@ -65,15 +67,19 @@ def get_partial_model(request, pk):
     print "~~~~~GET pk = " , pk, type(pk)
     data = Stream_DB.objects.filter(title = "Little Doll")
     main_html_dict = {'DB' : data}
-
-    
-    
+   
     return render(request,
                   MAIN_TEMPLATE,
                   main_html_dict)
 
+def url_submit(request):
+    print "Submit"
+    url = ""
+    if request.method == 'GET':
+        url = request.GET['_url']
+        print url    
 
-
+    return HttpResponse("Get")
 
 
     

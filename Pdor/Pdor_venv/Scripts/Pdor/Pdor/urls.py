@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^streams/$', stream.get_stream_url),
     url(r'^stream/(?P<pk>\d+)/$', stream.get_partial_model),
+    url(r'^urlsubmit/$', stream.url_submit),
     url(r'^', stream.home_page),
 ]
