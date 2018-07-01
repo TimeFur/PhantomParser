@@ -9,12 +9,13 @@ from selenium import webdriver
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.alert import Alert
 from time import sleep
-import os
+import os, sys
 
 import pafy
 import threading
 import Queue as queue
 import time
+
 #logging.basicConfig(level = logging.DEBUG)
 
 # The youtube should be used the latest browser for parsing chat data
@@ -23,6 +24,8 @@ import time
 ------------------------------'''
 EXIST_DIR_PATH = "C:\\Users\\djs86\\Downloads\\"
 DOWNLOAD_URL = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ4OHFXaTEr1agQyeQd_GEA_"
+TARGET_PATH = "English"
+THREAD_NUM = 20
 
 def folder_list(path):
     file_list = []
@@ -84,14 +87,30 @@ class Pafy_obj(threading.Thread):
         
         while self.queue.qsize() > 0:
             link = self.queue.get()
-
-            print link.title + "Downloading..."
+            '''
+            print link.title
+            print "Downloading..."
             filename, checkbit= self._check_filename(link.title)
 
             if checkbit == 0:
                 stream = link.getbestaudio()
-                stream.download(filepath = './' + filename + '.mp3',quiet = True)
+                stream.download(filepath = './' + TARGET_PATH + '/'
+                                            + filename + '.mp3'
+                                            ,quiet = True)
+            '''
+            self.thread_download(link)
             
+    def thread_download(self, download_url):
+        pafy_obj = pafy.new(download_url)
+        stream = pafy_obj.getbestaudio() #Return the stream type
+
+        print pafy_obj.title + "Download..."
+
+        filename = pafy_obj.title
+        filename, checkbit= self._check_filename(pafy_obj.title)
+        if checkbit == 0:
+            filename = stream.download(filepath = './' + TARGET_PATH + '/' + filename + '.mp3',
+                                       quiet = True)
     #Chuck download
     #Total bytes in stream (int)
     #Total bytes in downloaded (int)
@@ -114,7 +133,7 @@ class Pafy_obj(threading.Thread):
         f = f.replace('*', '')
 
         _filwname = f + '.mp3'
-        if _filwname in os.listdir('.'):
+        if _filwname in os.listdir('./' + TARGET_PATH + '/'):
             print "File name " + f + " exist~~~"
             i += 1
             
@@ -265,7 +284,7 @@ class YT_download():
         print ("result_list = " + str(len(result_list)))
         print ("======Done======")
 
-        return result_list, result_to_list
+        return result_list, result_to_list, result_name_list
 
 def AutoSeleFlow():
     #---------------------Selenium Driver------------------------------
@@ -292,10 +311,12 @@ def Mutiple_thread_download(list_url, thread_num):
     
     #Get the stream data into Queue
     for i in range(len(pafy_obj['items'])):
-        print pafy_obj['items'][i]['pafy'].title
+        #print pafy_obj['items'][i]['pafy'].title
         #stream = pafy_obj['items'][i]['pafy'].getbestaudio()
         _link = pafy_obj['items'][i]['pafy']
+        print _link
         stream_queue.put(_link)
+    print "Total audion file = " + str(len(pafy_obj['items']))
 
     #Create the thread
     for i in range(thread_num):
@@ -305,8 +326,84 @@ def Mutiple_thread_download(list_url, thread_num):
     for _thread in threads:
         _thread.join()
     
+def Mutiple_thread_download_withSele(list_url, thread_num):
+    pattern = "__:__"
+    stream_queue = queue.Queue()
+    threads = []
+    yt_download_list = []
+    
+    mode_switch = 0
+    if "youtube" in list_url:
+        mode_switch = 1
+    
+    #---------------------------------Get the stream data into Queue
+    if mode_switch == 1:
+        
+        chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
+        driver = webdriver.Chrome(chrome_path)
+        
+        yt_obj = YT_download(driver, list_url)
+        youtube_list,l_to_url, title_list = yt_obj.parseTubeList(list_url)
+
+        driver.close()
+
+        for i, url in enumerate(youtube_list):
+            d = {'title': title_list[i],
+                 'url'  : url}
+            yt_download_list.append(d)
+
+            stream_queue.put(url)
+
+        print "Total audio file = " + str(len(youtube_list))
+
+        #save to list
+        with open(TARGET_PATH + '.txt', 'wb') as f:
+            for d in yt_download_list:
+                msg =   d['title'] + pattern + d['url'] + '\n'
+                f.write(msg.encode('utf-8'))
+    #---------------------------------Download the stream
+    elif mode_switch == 0 :
+        with open(TARGET_PATH + '.txt', 'rb') as f:
+            for raw_msg in f.readlines():
+                msg = raw_msg.decode('utf-8')
+                        
+                if msg.find(pattern) > 0:
+                    t   = msg[:msg.find(pattern)]
+                    url = msg[msg.find(pattern) + 5:]
+                    d = {'title': t,
+                         'url'  : url}
+                    if check_file(t) == 1:
+                        yt_download_list.append(d)
+                        stream_queue.put(url)
+               
+        print "Total audio file = " + str(len(yt_download_list))      
+
+        #Create the thread
+        
+        for i in range(thread_num):
+            threads.append(Pafy_obj(stream_queue))
+            threads[i].start()
+            
+        for _thread in threads:
+            _thread.join()
+    
+
+def check_file(title):
+    folder_list = os.listdir('./' + TARGET_PATH + '/')
+    file_name = title + ".mp3"
+    if file_name in folder_list:
+        #print title + "Already exist"
+        return 0
+    else:
+        return 1
     
 def PafyFlow():
+    if TARGET_PATH in os.listdir('.'):
+        print "TARGET PATH exist"
+    else:
+        print "TARGET PATH is not exist"
+        return 0
+    
     ytdl_type = raw_input("Choose the download type ([1]Single youtbe download. [2]Playlist download) :")
 
     if ytdl_type == '1':
@@ -318,13 +415,46 @@ def PafyFlow():
     elif ytdl_type == '2':
         print "Download Playlist"
         _url = raw_input("Type the url : ")
-        Mutiple_thread_download(_url, 10)
+        #Mutiple_thread_download(_url, THREAD_NUM)
+        Mutiple_thread_download_withSele(_url, THREAD_NUM)
     else:
         print "Do nothing"
+        
+def show_list(list_url, folder_path):
+    youtube_list = []
+    folder_list = []
+    
+    #url list
+    
+    chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
+    driver = webdriver.Chrome(chrome_path)
+
+    _url  = list_url
+    
+    yt_obj = YT_download(driver, _url)
+    l1, l2_to, l3 = yt_obj.parseTubeList(_url)
+    driver.close()
+    for i in l3:
+        youtube_list.append(i+".mp3")
+    
+    #floder list
+    folder_list = os.listdir('./' + folder_path + '/')
+
+    print "Youtube link len = ", len(youtube_list)
+    print "Folder len = ", len(folder_list)
+
+    unmatch_set = set(youtube_list) - set(folder_list)
+    #unmatch_set = set(folder_list) - set(youtube_list)
+    for i, _url in enumerate(unmatch_set):
+        print i, _url
     
 def main():
     #AutoSeleFlow()
     PafyFlow()
+    
+    #list_url = "https://www.youtube.com/playlist?list=PL-sWiDCbVIJ5JtE_j-rC5XbIEDigNZ4Bl"
+    #folder_path = 'Song1'
+    #show_list(list_url, folder_path)
     
 if __name__ == "__main__":
     main()
