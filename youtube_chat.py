@@ -55,15 +55,29 @@ def Chatroom_flow():
     chat_show(url)
     
 def main():
-    
+
+    pattern = "yt-live-chat-text-message-renderer"
     #https://www.youtube.com/watch?v=u5X_hiHtKkM
     chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
     driver = webdriver.Chrome(chrome_path)
-    web_request = driver.get("https://www.youtube.com/live_chat?v=u5X_hiHtKkM")
+    web_request = driver.get("https://www.youtube.com/live_chat?v=wUPPkSANpyo")
 
-    #soup = BeautifulSoup(driver.page_source, 'html.parser')
-    #msg = soup.find_all('yt-live-chat-text-message-renderer')
-    #print msg
+    #Loop page source    
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    msg = soup.find_all(pattern)
+    
+    for m in msg:
+        result = m.find_all(id = "message")
+        print type(result)
+        for i in result:
+            print i
+        
+    '''
+    with open("tmp.txt", 'w') as f:
+        f.write(msg)
+    '''
+    
+    
     #ps = driver.page_source
     #print ps
     
