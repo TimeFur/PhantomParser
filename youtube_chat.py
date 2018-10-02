@@ -53,34 +53,36 @@ def chat_show(url):
 def Chatroom_flow():
     url = raw_input("URL = ")
     chat_show(url)
-    
-def main():
 
+
+def main():
+    chat_url = "https://www.youtube.com/live_chat?v=u5X_hiHtKkM"
+
+    #Open the browser
     pattern = "yt-live-chat-text-message-renderer"
-    #https://www.youtube.com/watch?v=u5X_hiHtKkM
     chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
     driver = webdriver.Chrome(chrome_path)
-    web_request = driver.get("https://www.youtube.com/live_chat?v=wUPPkSANpyo")
+    web_request = driver.get(chat_url)
 
-    #Loop page source    
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    msg = soup.find_all(pattern)
-    
-    for m in msg:
-        result = m.find_all(id = "message")
-        print type(result)
-        for i in result:
-            print i
-        
-    '''
-    with open("tmp.txt", 'w') as f:
-        f.write(msg)
-    '''
-    
-    
-    #ps = driver.page_source
-    #print ps
-    
-    
+    #Loop page source
+    previous_set = set()
+    try:
+        while True:
+            current_set = set()
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            msg = soup.find_all(pattern)
+            #get the latest msg
+            for m in msg:
+                result = m.find_all(id = "message")
+                for i in result:
+                    current_set.add(i.string)
+                    
+            if current_set != previous_set:
+                for msg in (current_set - previous_set):
+                    print msg
+            previous_set = current_set
+                
+    except:
+        pass
 if __name__ == "__main__":
     main()
