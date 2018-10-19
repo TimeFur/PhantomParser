@@ -21,10 +21,10 @@
 		<p id="result"></p>
 		
 		
-		<audio controls autoplay>
+		<!--<audio controls autoplay>
 			<source src = "static/audio/Goodnight.mp3" type="audio/mpeg"/>
 			<em>Sorry, your browser doesn't support HTML5 audio.</em>
-		</audio>
+		</audio>-->
 		
 		<h1>Show time</h1>
 		{% for data in DB%}
@@ -54,7 +54,7 @@
 			$(document).ready(function(){
 				$("#Submit_mp3_btn").click(function(){
 					var url = $("#url_id").val();
-					$.get("/urlsubmit_mp3_download/", {'_url':url}, function(ret){
+					$.get("/urlsubmit_audio_download/", {'_url':url}, function(ret){
 						<!--$('#result').html(ret)-->
 					})
 				});

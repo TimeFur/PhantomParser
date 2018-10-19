@@ -53,11 +53,11 @@ class Pafy_obj(threading.Thread):
                                        quiet = True,
                                        callback = self.mycb)
         elif download_type == "VIDEO":
-            stream = pafy_obj.getbest() #Return the stream type
+            stream = pafy_obj.getbest(preftype = "mp4") #Return the stream type
 
             filename = pafy_obj.title
 
-            filename = stream.download(filepath = './' + filename + stream.extension,
+            filename = stream.download(filepath = './' + filename + "." + stream.extension,
                                        quiet = True,
                                        callback = self.mycb)
         else:
@@ -166,8 +166,9 @@ def PafyFlow():
         print "Do nothing"
         
 def yt_download(url, download_type):
-    check_pattern = "https://www.youtube.com/"
-    if url.find(check_pattern) >= 0:
+    check_pattern_with_security = "https://www.youtube.com/"
+    check_pattern = "http://www.youtube.com/"
+    if url.find(check_pattern) >= 0 or url.find(check_pattern_with_security) >= 0:
         yt_obj = Pafy_obj()
         try:
             yt_obj.download(url, download_type)

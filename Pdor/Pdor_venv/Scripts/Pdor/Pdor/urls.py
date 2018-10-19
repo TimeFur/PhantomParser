@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^streams/$', stream.get_stream_url),
     url(r'^stream/(?P<pk>\d+)/$', stream.get_partial_model),
-    url(r'^urlsubmit_mp3_download/$', stream.url_submit_mp3_download),
+    url(r'^urlsubmit_mp3_download/$', stream.url_submit_audio_download),
     url(r'^urlsubmit_video_download/$', stream.url_submit_video_download),
     url(r'^', stream.home_page),
 ]

@@ -75,7 +75,7 @@ def get_partial_model(request, pk):
                   MAIN_TEMPLATE,
                   main_html_dict)
 
-def url_submit_mp3_download(request):
+def url_submit_audio_download(request):
     print "Submit MP3"
     print request.path
     url = ""
