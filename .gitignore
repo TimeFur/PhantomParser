@@ -5,5 +5,8 @@ phantomjs-2.1.1-windows/*
 *.temp
 *.exe
 *.pyc
+Pdor/Pdor_venv/Scripts/Pdor/stream_audio/Include/*.pyc
+Pdor/Pdor_venv/Scripts/Pdor/stream_audio/*.pyc
+Pdor/Pdor_venv/Scripts/Pdor/Pdor/*.pyc
 Pdor/Pdor_venv/Lib/site-packages/
 Pdor/Pdor_venv/share/
