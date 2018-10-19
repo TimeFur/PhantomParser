@@ -75,17 +75,28 @@ def get_partial_model(request, pk):
                   MAIN_TEMPLATE,
                   main_html_dict)
 
-def url_submit(request):
-    print "Submit"
+def url_submit_mp3_download(request):
+    print "Submit MP3"
+    print request.path
     url = ""
     if request.method == 'GET':
         url = request.GET['_url']
         print url
     
-    yt_audio_download(url)
+    yt_download(url, "AUDIO")
 
     return HttpResponse("Get")
 
+def url_submit_video_download(request):
+    print "Submit Video"
+    print request.path
+    url = ""
+    if request.method == 'GET':
+        url = request.GET['_url']
+        print url
+    
+    yt_download(url, "VIDEO")
 
+    return HttpResponse("Get")
     
     

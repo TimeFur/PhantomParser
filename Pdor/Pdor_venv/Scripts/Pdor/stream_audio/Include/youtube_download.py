@@ -39,16 +39,29 @@ class Pafy_obj(threading.Thread):
         self.pafy_obj = None
         self.queue = queue
         
-    def download(self, download_url):
+    def download(self, download_url, download_type = "AUDIO"):
         pafy_obj = pafy.new(download_url)
-        stream = pafy_obj.getbestaudio() #Return the stream type
 
         print pafy_obj.title
-        filename = pafy_obj.title
+        
+        if download_type == "AUDIO":
+            stream = pafy_obj.getbestaudio() #Return the stream type
 
-        filename = stream.download(filepath = './' + filename + '.mp3',
-                                   quiet = True,
-                                   callback = self.mycb)
+            filename = pafy_obj.title
+
+            filename = stream.download(filepath = './' + filename + '.mp3',
+                                       quiet = True,
+                                       callback = self.mycb)
+        elif download_type == "VIDEO":
+            stream = pafy_obj.getbest() #Return the stream type
+
+            filename = pafy_obj.title
+
+            filename = stream.download(filepath = './' + filename + stream.extension,
+                                       quiet = True,
+                                       callback = self.mycb)
+        else:
+            print ("In Pady_obj module, the download function [download type] not found!!!")
 
     def playlistdownload(self, list_url):
         self.pafy_obj = pafy.get_playlist(list_url)
@@ -152,12 +165,12 @@ def PafyFlow():
     else:
         print "Do nothing"
         
-def yt_audio_download(url):
+def yt_download(url, download_type):
     check_pattern = "https://www.youtube.com/"
     if url.find(check_pattern) >= 0:
         yt_obj = Pafy_obj()
         try:
-            yt_obj.download(url)
+            yt_obj.download(url, download_type)
         except:
             print ("download load fail")
     else:

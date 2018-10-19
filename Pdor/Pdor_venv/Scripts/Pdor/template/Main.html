@@ -16,7 +16,8 @@
 		</form>
 		
 		
-		<Input id = "test_btn" type="button" value = "Send to server" ></button>
+		<Input id = "Submit_mp3_btn" type="button" value = "Download MP3" ></button>
+		<Input id = "Submit_video_btn" type="button" value = "Download Video" ></button>
 		<p id="result"></p>
 		
 		
@@ -51,10 +52,17 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 		<script>
 			$(document).ready(function(){
-				$("#test_btn").click(function(){
+				$("#Submit_mp3_btn").click(function(){
 					var url = $("#url_id").val();
-					$.get("/urlsubmit/", {'_url':url}, function(ret){
-						$('#result').html(ret)
+					$.get("/urlsubmit_mp3_download/", {'_url':url}, function(ret){
+						<!--$('#result').html(ret)-->
+					})
+				});
+				
+				$("#Submit_video_btn").click(function(){
+					var url = $("#url_id").val();
+					$.get("/urlsubmit_video_download/", {'_url':url}, function(ret){
+						<!--$('#result').html(ret)-->
 					})
 				});
 			});
