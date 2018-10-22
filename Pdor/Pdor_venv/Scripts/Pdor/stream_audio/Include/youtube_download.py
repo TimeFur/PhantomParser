@@ -47,15 +47,16 @@ class Pafy_obj(threading.Thread):
         if download_type == "AUDIO":
             stream = pafy_obj.getbestaudio() #Return the stream type
 
-            filename = pafy_obj.title
+            filename, bit = self._check_filename(pafy_obj.title)
 
             filename = stream.download(filepath = './' + filename + '.mp3',
                                        quiet = True,
                                        callback = self.mycb)
         elif download_type == "VIDEO":
+            print "VIDEO"
             stream = pafy_obj.getbest(preftype = "mp4") #Return the stream type
 
-            filename = pafy_obj.title
+            filename, bit = self._check_filename(pafy_obj.title)
 
             filename = stream.download(filepath = './' + filename + "." + stream.extension,
                                        quiet = True,
@@ -108,6 +109,19 @@ class Pafy_obj(threading.Thread):
     def mycb(self, total, recvd, ratio, rate, eta):
         print(recvd, ratio, eta)
 
+    def filename_revise(self, f):
+        f = f.replace('<', '')
+        f = f.replace('>', '')
+        f = f.replace(':', '')
+        f = f.replace('"', '')
+        f = f.replace('/', '')
+        f = f.replace('\\', '')
+        f = f.replace('|', '')
+        f = f.replace('?', '')
+        f = f.replace('*', '')
+
+        return f
+    
     def _check_filename(self, f):
         i = 0
         f = f.replace('<', '')
@@ -120,8 +134,8 @@ class Pafy_obj(threading.Thread):
         f = f.replace('?', '')
         f = f.replace('*', '')
 
-        _filwname = f + '.mp3'
-        if _filwname in os.listdir('.'):
+        _filename = f + '.mp3'
+        if _filename in os.listdir('.'):
             print "File name " + f + " exist~~~"
             i += 1
             
@@ -169,17 +183,21 @@ def yt_download(url, download_type):
     check_pattern_with_security = "https://www.youtube.com/"
     check_pattern = "http://www.youtube.com/"
     if url.find(check_pattern) >= 0 or url.find(check_pattern_with_security) >= 0:
-        yt_obj = Pafy_obj()
+        yt_obj = Pafy_obj()        
         try:
             yt_obj.download(url, download_type)
-        except:
+        except Exception, e:
             print ("download load fail")
+            print (e)
+        
     else:
         print ("Url pattern is not found")
-        
+'''
 def main():
-    PafyFlow()
+    url = "https://www.youtube.com/watch?v=D69Mkphol-A"
+    yt_download(url, "VIDEO")
 
-def test():
-    print "Youtube downloader!!!"
+if __name__ == "__main__":
+    main()
     
+'''
