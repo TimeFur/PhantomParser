@@ -38,25 +38,8 @@ def channels_list_by_username(service, **kwargs):
 '''
 
 def chat_show(url):
-    url = url.replace('watch', 'live_chat')
-    print (url)
-    session = requests.Session()
-    r = session.get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
-
-    print r.text
-    
-    msg = soup.find_all('yt-live-chat-text-message-renderer')
-    for tag in msg:
-        print tag.string
-
-def Chatroom_flow():
-    url = raw_input("URL = ")
-    chat_show(url)
-
-
-def main():
-    chat_url = "https://www.youtube.com/live_chat?v=u5X_hiHtKkM"
+    chat_url = url.replace('watch', 'live_chat')
+    print (chat_url)
 
     #Open the browser
     pattern = "yt-live-chat-text-message-renderer"
@@ -82,7 +65,15 @@ def main():
                     print msg
             previous_set = current_set
                 
-    except:
-        pass
+    except Exception,e:
+        print (e)
+
+def Chatroom_flow():
+    url = raw_input("URL = ")
+    chat_show(url)
+
+def main():
+    Chatroom_flow()
+    
 if __name__ == "__main__":
     main()
