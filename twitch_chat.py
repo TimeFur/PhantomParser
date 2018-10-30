@@ -74,7 +74,7 @@ def main():
     #twitch_chat(driver, _url)
     chrome_path = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
     driver = webdriver.Chrome(chrome_path)
-    _url  = "https://www.youtube.com/watch?v=4Pz5EoLmSVw"
+    _url  = "https://www.youtube.com/watch?v=u5X_hiHtKkM"
     youtube_chat(driver, _url)
     
 if __name__ == "__main__":
